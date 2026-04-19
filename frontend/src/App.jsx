@@ -21,11 +21,9 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window === "undefined") return false;
+    if (typeof window === "undefined") return true;
     const stored = window.localStorage.getItem("site-theme");
-    return stored
-      ? stored === "dark"
-      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return stored ? stored === "dark" : true; // Default to dark
   });
 
   useEffect(() => {

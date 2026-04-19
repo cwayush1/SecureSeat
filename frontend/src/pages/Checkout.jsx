@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import { backendAPI } from '../services/api';
 
-// --- Premium Custom SVG Icons ---
 const CameraIcon = () => (
   <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -23,25 +22,17 @@ const ClockIcon = () => (
   </svg>
 );
 
-const CheckCircleIcon = () => (
-  <svg className="w-20 h-20 text-green-500 mb-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
 const Checkout = () => {
-    // Grab the parameters we passed in the URL from the SeatMap
     const { matchId, seatId, tierName } = useParams();
     const navigate = useNavigate();
     const webcamRef = useRef(null);
 
     const [lockStatus, setLockStatus] = useState('Acquiring lock...');
-    const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(600);
     const [imageSrc, setImageSrc] = useState(null);
     const [isBooking, setIsBooking] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState(null);
 
-    // 1. Trigger the Redis Lock immediately when the page loads
     useEffect(() => {
         const lockSeat = async () => {
             try {
@@ -49,46 +40,32 @@ const Checkout = () => {
                 setLockStatus('Seat Locked! You have 10 minutes to complete checkout.');
             } catch (error) {
                 console.error(error);
-                setLockStatus(error.response?.data?.message || 'Failed to lock seat. Someone else might be holding it.');
-                setTimeLeft(0); // Stop timer if lock fails
+                setLockStatus(error.response?.data?.message || 'Failed to lock seat.');
+                setTimeLeft(0);
             }
         };
         lockSeat();
     }, [matchId, seatId]);
 
-    // 2. Handle the Countdown Timer
     useEffect(() => {
         if (timeLeft <= 0) {
-            if (lockStatus.includes('Locked')) {
-                setLockStatus('Time expired. Seat lock released.');
-            }
+            if (lockStatus.includes('Locked')) setLockStatus('Time expired. Seat lock released.');
             return;
         }
-        const timerId = setInterval(() => {
-            setTimeLeft((prev) => prev - 1);
-        }, 1000);
+        const timerId = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
         return () => clearInterval(timerId);
     }, [timeLeft, lockStatus]);
 
-    // 3. Webcam Capture Function
     const capture = useCallback(() => {
         const imageBase64 = webcamRef.current.getScreenshot();
         setImageSrc(imageBase64);
     }, [webcamRef]);
 
-    // 4. Finalize Booking
     const handleConfirmBooking = async () => {
         if (!imageSrc) return alert("Please capture your photo for biometric security.");
-        
         setIsBooking(true);
         try {
-            const response = await backendAPI.post('/bookings/confirm', {
-                matchId,
-                seatId,
-                tierName,
-                photoBase64: imageSrc
-            });
-            
+            const response = await backendAPI.post('/bookings/confirm', { matchId, seatId, tierName, photoBase64: imageSrc });
             setBookingSuccess(response.data.message);
         } catch (error) {
             console.error(error);
@@ -98,29 +75,30 @@ const Checkout = () => {
         }
     };
 
-    // Helper to format seconds into MM:SS
     const formatTime = (seconds) => {
         const m = Math.floor(seconds / 60).toString().padStart(2, '0');
         const s = (seconds % 60).toString().padStart(2, '0');
         return `${m}:${s}`;
     };
 
-    const isUrgent = timeLeft > 0 && timeLeft <= 120; // Last 2 minutes makes timer red
+    const isUrgent = timeLeft > 0 && timeLeft <= 120;
 
-    // ── UI Render: Success State ──
+    // Success State
     if (bookingSuccess) {
         return (
-            <div className="min-h-[85vh] bg-[#F8FAFC] flex items-center justify-center px-4 font-['Inter',sans-serif]">
-                <div className="max-w-md w-full bg-white rounded-[2rem] p-10 text-center shadow-xl shadow-slate-200/50 border border-slate-100 animate-[fadeUp_0.5s_ease-out]">
-                    <CheckCircleIcon />
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-4">Ticket Confirmed!</h1>
-                    <p className="text-slate-600 font-medium mb-2">{bookingSuccess}</p>
-                    <p className="text-sm text-slate-400 mb-10 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        Your biometric data is now securely encrypted and locked to this ticket for seamless gate entry.
+            <div className="min-h-[85vh] flex items-center justify-center px-4" style={{ background: 'var(--bg)' }}>
+                <div className="max-w-md w-full rounded-xl p-9 text-center animate-[fadeUp_0.4s_ease-out]" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                    <svg className="w-16 h-16 mb-5 mx-auto" style={{ color: 'var(--success)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h1 className="text-2xl font-bold tracking-tight mb-3" style={{ color: 'var(--text)' }}>Ticket Confirmed!</h1>
+                    <p className="font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>{bookingSuccess}</p>
+                    <p className="text-sm mb-8 p-3.5 rounded-lg" style={{ color: 'var(--muted)', background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
+                        Your biometric data is now securely encrypted and locked to this ticket.
                     </p>
-                    <button 
-                        onClick={() => navigate('/my-tickets')}
-                        className="w-full bg-slate-900 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-md transform hover:-translate-y-1"
+                    <button onClick={() => navigate('/my-tickets')}
+                        className="w-full font-semibold py-3.5 px-6 rounded-lg transition-all cursor-pointer hover:opacity-90"
+                        style={{ background: 'var(--primary)', color: 'var(--bg)' }}
                     >
                         View My Tickets
                     </button>
@@ -129,105 +107,84 @@ const Checkout = () => {
         );
     }
 
-    // ── UI Render: Checkout State ──
+    // Checkout State
     return (
-        <div className="min-h-[85vh] bg-[#F8FAFC] font-['Inter',sans-serif] text-slate-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-[85vh] py-10 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
             <div className="max-w-3xl mx-auto">
                 
-                {/* Header & Timer Row */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                {/* Header & Timer */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-7 gap-4">
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
-                            Secure Checkout
-                        </h2>
-                        <p className="text-slate-500 font-medium mt-1">
-                            Completing booking for <span className="font-bold text-blue-600">Seat {seatId}</span>
+                        <h2 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ color: 'var(--text)' }}>Secure Checkout</h2>
+                        <p className="font-medium mt-1 text-sm" style={{ color: 'var(--muted)' }}>
+                            Completing booking for <span className="font-bold" style={{ color: 'var(--text)' }}>Seat {seatId}</span>
                         </p>
                     </div>
-                    
-                    {/* Urgency Timer Badge */}
-                    <div className={`inline-flex items-center px-4 py-2.5 rounded-xl font-bold font-['JetBrains_Mono'] border shadow-sm transition-colors duration-300 ${
-                        timeLeft === 0 ? 'bg-red-50 text-red-700 border-red-200' :
-                        isUrgent ? 'bg-red-600 text-white border-red-700 animate-pulse' : 
-                        'bg-white text-slate-700 border-slate-200'
-                    }`}>
+                    <div className={`inline-flex items-center px-3.5 py-2 rounded-lg font-bold font-mono text-sm border transition-colors ${
+                        timeLeft === 0 ? '' : isUrgent ? 'animate-pulse' : ''
+                    }`} style={{
+                        background: timeLeft === 0 ? 'rgba(239,68,68,0.1)' : isUrgent ? 'var(--danger)' : 'var(--surface-muted)',
+                        color: timeLeft === 0 ? 'var(--danger)' : isUrgent ? '#fff' : 'var(--text)',
+                        borderColor: timeLeft === 0 ? 'rgba(239,68,68,0.2)' : isUrgent ? 'var(--danger)' : 'var(--border)',
+                    }}>
                         <ClockIcon />
                         {timeLeft > 0 ? formatTime(timeLeft) : '00:00'}
                     </div>
                 </div>
 
-                {/* Status Message */}
-                <div className={`p-4 rounded-xl mb-8 border flex items-center justify-center font-medium ${
-                    lockStatus.includes('Locked') ? 'bg-green-50 border-green-200 text-green-700' : 
-                    'bg-red-50 border-red-200 text-red-700'
-                }`}>
-                    {lockStatus.includes('Locked') && <span className="w-2 h-2 rounded-full bg-green-500 mr-3 animate-pulse"></span>}
+                {/* Status */}
+                <div className="p-3.5 rounded-lg mb-7 border flex items-center justify-center font-medium text-sm" style={{
+                    background: lockStatus.includes('Locked') ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
+                    borderColor: lockStatus.includes('Locked') ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)',
+                    color: lockStatus.includes('Locked') ? 'var(--success)' : 'var(--danger)',
+                }}>
+                    {lockStatus.includes('Locked') && <span className="w-2 h-2 rounded-full mr-2.5 animate-pulse" style={{ background: 'var(--success)' }} />}
                     {lockStatus}
                 </div>
 
-                {/* Biometric Capture Card */}
+                {/* Biometric */}
                 {timeLeft > 0 && lockStatus.includes('Locked') && (
-                    <div className="bg-white rounded-[2rem] p-6 md:p-10 shadow-lg shadow-slate-200/50 border border-slate-100 animate-[fadeIn_0.4s_ease-out]">
-                        
-                        <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 mb-4 border border-blue-100">
+                    <div className="rounded-xl p-6 md:p-9 animate-[fadeIn_0.3s_ease-out]" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <div className="text-center mb-7">
+                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3" style={{ background: 'var(--surface-muted)', color: 'var(--text-secondary)' }}>
                                 <ShieldIcon />
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900 mb-2">Biometric Identity Lock</h3>
-                            <p className="text-slate-500 max-w-md mx-auto text-sm">
-                                To prevent scalping and ensure seamless stadium entry, please capture your face. This data is encrypted and bound exclusively to your ticket.
+                            <h3 className="text-xl font-bold mb-1.5" style={{ color: 'var(--text)' }}>Biometric Identity Lock</h3>
+                            <p className="max-w-md mx-auto text-sm" style={{ color: 'var(--muted)' }}>
+                                Capture your face to prevent scalping and ensure seamless stadium entry.
                             </p>
                         </div>
                         
                         {!imageSrc ? (
-                            /* Camera View */
                             <div className="max-w-md mx-auto">
-                                <div className="relative rounded-2xl overflow-hidden bg-slate-900 shadow-xl mb-6">
-                                    {/* HUD Crosshairs */}
-                                    <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-blue-500 rounded-tl-lg z-10 opacity-70"></div>
-                                    <div className="absolute top-4 right-4 w-6 h-6 border-t-4 border-r-4 border-blue-500 rounded-tr-lg z-10 opacity-70"></div>
-                                    <div className="absolute bottom-4 left-4 w-6 h-6 border-b-4 border-l-4 border-blue-500 rounded-bl-lg z-10 opacity-70"></div>
-                                    <div className="absolute bottom-4 right-4 w-6 h-6 border-b-4 border-r-4 border-blue-500 rounded-br-lg z-10 opacity-70"></div>
-                                    
-                                    <Webcam
-                                        audio={false}
-                                        ref={webcamRef}
-                                        screenshotFormat="image/jpeg"
-                                        className="w-full h-auto block opacity-90"
-                                    />
-                                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-[scanline_2s_linear_infinite]" />
+                                <div className="relative rounded-xl overflow-hidden shadow-lg mb-5" style={{ background: '#000' }}>
+                                    <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full h-auto block opacity-90" />
                                 </div>
-                                <button 
-                                    onClick={capture} 
-                                    className="w-full bg-slate-900 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-md flex items-center justify-center transform hover:-translate-y-1"
+                                <button onClick={capture}
+                                    className="w-full font-semibold py-3.5 px-6 rounded-lg transition-all flex items-center justify-center cursor-pointer hover:opacity-90"
+                                    style={{ background: 'var(--primary)', color: 'var(--bg)' }}
                                 >
-                                    <CameraIcon />
-                                    Capture Photo
+                                    <CameraIcon /> Capture Photo
                                 </button>
                             </div>
                         ) : (
-                            /* Captured View */
-                            <div className="max-w-md mx-auto animate-[fadeIn_0.3s_ease-out]">
-                                <div className="relative rounded-2xl overflow-hidden border-4 border-slate-800 shadow-xl mb-6">
+                            <div className="max-w-md mx-auto animate-[fadeIn_0.2s_ease-out]">
+                                <div className="relative rounded-xl overflow-hidden shadow-lg mb-5 border-2" style={{ borderColor: 'var(--border)' }}>
                                     <img src={imageSrc} alt="Captured face" className="w-full h-auto block" />
-                                    <div className="absolute bottom-0 left-0 w-full bg-green-500 text-white text-xs font-bold text-center py-1 uppercase tracking-widest">
+                                    <div className="absolute bottom-0 left-0 w-full text-xs font-semibold text-center py-1.5 uppercase tracking-wider" style={{ background: 'var(--success)', color: '#fff' }}>
                                         Scan Successful
                                     </div>
                                 </div>
-                                
-                                <div className="flex gap-4">
-                                    <button 
-                                        onClick={() => setImageSrc(null)} 
-                                        className="flex-1 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-4 px-4 rounded-xl transition-colors"
+                                <div className="flex gap-3">
+                                    <button onClick={() => setImageSrc(null)}
+                                        className="flex-1 font-semibold py-3.5 px-4 rounded-lg transition-colors cursor-pointer"
+                                        style={{ background: 'var(--surface-muted)', color: 'var(--text)', border: '1px solid var(--border)' }}
                                     >
                                         Retake
                                     </button>
-                                    <button 
-                                        onClick={handleConfirmBooking} 
-                                        disabled={isBooking}
-                                        className={`flex-[2] text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center transition-all duration-300 shadow-lg ${
-                                            isBooking ? 'bg-slate-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500 transform hover:-translate-y-1 cursor-pointer'
-                                        }`}
+                                    <button onClick={handleConfirmBooking} disabled={isBooking}
+                                        className={`flex-[2] font-semibold py-3.5 px-6 rounded-lg flex items-center justify-center transition-all ${isBooking ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:opacity-90'}`}
+                                        style={{ background: 'var(--success)', color: '#fff' }}
                                     >
                                         {isBooking ? (
                                             <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" /> Processing...</>
@@ -247,14 +204,6 @@ const Checkout = () => {
                     0% { transform: translateY(0); }
                     50% { transform: translateY(300px); }
                     100% { transform: translateY(0); }
-                }
-                @keyframes fadeUp {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
                 }
             `}</style>
         </div>
