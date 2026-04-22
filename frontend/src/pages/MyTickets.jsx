@@ -121,9 +121,7 @@ const MyTickets = () => {
             {/* ── Header ── */}
             <header className="max-w-5xl mx-auto mb-10 text-center md:text-left flex flex-col md:flex-row md:items-center justify-between">
                 <div>
-                    <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase mb-3 shadow-sm">
-                        🎟️ Digital Wallet
-                    </div>
+                    
                     <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">
                         My Tickets
                     </h1>

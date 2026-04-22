@@ -185,14 +185,7 @@ export default function SecurityScan() {
                         {ticketData.user_name}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1 font-['JetBrains_Mono']">
-                        Assigned Seat
-                      </p>
-                      <p className="text-xl text-slate-900 font-bold">
-                        {ticketData.seat_id}
-                      </p>
-                    </div>
+                   
                     <div className="pt-4 border-t border-slate-100">
                       <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-bold px-3 py-1.5 rounded-md uppercase tracking-wide border border-green-200">
                         {ticketData.status}

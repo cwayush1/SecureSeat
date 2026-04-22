@@ -280,7 +280,7 @@ export default function UserPortal() {
         {/* ── 2. UPCOMING MATCHES (SLIDER) ── */}
         {matches.length > 0 && (
           <section className="mb-16">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-2">
               <h3 className="text-2xl font-extrabold text-slate-900 mb-4 tracking-tight flex items-center gap-2">
             <span className="w-2 h-8 bg-blue-600 rounded-full"></span>
             Upcoming Matches
