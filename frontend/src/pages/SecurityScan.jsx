@@ -116,7 +116,7 @@ export default function SecurityScan() {
   };
 
   return (
-    <div className="min-h-[85vh] bg-[#F8FAFC] font-['Inter',sans-serif] text-slate-900 pb-20 pt-8">
+    <div className="min-h-[85vh] bg-[#e2e9f0] font-['Inter',sans-serif] text-slate-900 pb-20 pt-8">
       {/* ── Header Section ── */}
       <header className="text-center max-w-3xl mx-auto mb-10">
         <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase mb-4 shadow-sm">

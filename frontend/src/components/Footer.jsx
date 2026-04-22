@@ -1,5 +1,15 @@
 // src/components/Footer.jsx
 
+import logo from "../assets/secureseatsmall.png";
+
+const TicketLogo = () => (
+  <img
+    src={logo}
+    alt="Criceco Logo"
+    className="h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
+  />
+);
+
 const TwitterIcon = () => (
   <svg
     className="w-5 h-5"
@@ -38,8 +48,10 @@ export default function Footer() {
               href="/"
               className="flex items-center gap-3 text-2xl font-extrabold text-white tracking-tight no-underline mb-4"
             >
-              <span className="text-blue-500 text-3xl">🎫</span>
+              <TicketLogo />
+            <span className="text-2xl md:text-3xl font-black text-white tracking-tight group-hover:text-blue-400 transition-colors">
               Secure<span className="text-blue-500">Seat</span>
+            </span>
             </a>
             <p className="text-slate-400 text-sm leading-relaxed mb-6 pr-4">
               The premium destination for live sports ticketing. Interactive

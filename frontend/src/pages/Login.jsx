@@ -98,7 +98,7 @@ const Login = () => {
     };
 
     return (
-        <div className="flex justify-center items-center py-16 px-4 font-['Inter',sans-serif]">
+        <div className="flex justify-center bg-[#e2e9f0] items-center py-16 px-4 font-['Inter',sans-serif]">
             
             <div className="w-full max-w-[420px] bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-8 md:p-10 animate-[fadeIn_0.4s_ease-out]">
                 

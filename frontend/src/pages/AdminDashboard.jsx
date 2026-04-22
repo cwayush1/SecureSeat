@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   const selectedStadium = matchData.stadium_id ? getStadium(matchData.stadium_id) : null;
 
   return (
-    <div className="min-h-[85vh] bg-[#F8FAFC] font-['Inter',sans-serif] text-slate-900 pb-20 pt-8">
+    <div className="min-h-[85vh] bg-[#e2e9f0] font-['Inter',sans-serif] text-slate-900 pb-20 pt-8">
 
       {/* ── Header ── */}
       <header className="text-center max-w-3xl mx-auto mb-10">

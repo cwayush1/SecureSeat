@@ -116,7 +116,7 @@ const MyTickets = () => {
     );
 
     return (
-        <div className="min-h-[85vh] bg-[#F8FAFC] font-['Inter',sans-serif] text-slate-900 pb-20 pt-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-[85vh] bg-[#e2e9f0] font-['Inter',sans-serif] text-slate-900 pb-20 pt-8 px-4 sm:px-6 lg:px-8">
             
             {/* ── Header ── */}
             <header className="max-w-5xl mx-auto mb-10 text-center md:text-left flex flex-col md:flex-row md:items-center justify-between">

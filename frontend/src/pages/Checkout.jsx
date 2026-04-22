@@ -149,7 +149,7 @@ const Checkout = () => {
     // ── UI Render: Success State ──
     if (bookingSuccess) {
         return (
-            <div className="min-h-[85vh] bg-[#F8FAFC] flex items-center justify-center px-4 font-['Inter',sans-serif]">
+            <div className="min-h-[85vh] bg-[#e2e9f0] flex items-center justify-center px-4 font-['Inter',sans-serif]">
                 <div className="max-w-md w-full bg-white rounded-[2rem] p-10 text-center shadow-xl shadow-slate-200/50 border border-slate-100 animate-[fadeUp_0.5s_ease-out]">
                     <CheckCircleIcon />
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-4">Ticket Confirmed!</h1>
