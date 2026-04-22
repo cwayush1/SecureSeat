@@ -69,7 +69,7 @@ function App() {
 
   const isLoggedIn = !!user;
 
-  // 👉 FIX: Force uppercase to prevent any database case-sensitivity bugs ('security' vs 'Security')
+  // 👉 Force uppercase to prevent any database case-sensitivity bugs ('security' vs 'Security')
   const userRole = user?.role ? user.role.toUpperCase() : "USER";
 
   return (
@@ -100,7 +100,14 @@ function App() {
               }
             />
 
-            <Route path="/login" element={<Login />} />
+            {/* 🔥 THE FIX IS HERE 🔥 
+                If 'user' exists, immediately kick them to Home and erase history. 
+                Otherwise, show the Login page. 
+            */}
+            <Route 
+              path="/login" 
+              element={isLoggedIn ? <Navigate to="/" replace /> : <Login />} 
+            />
 
             {/* 👉 Prevent Staff from accessing booking flows */}
             <Route

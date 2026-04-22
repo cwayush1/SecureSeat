@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { backendAPI } from '../services/api';
 
 // --- Premium Custom SVG Icons ---
@@ -26,7 +27,9 @@ const ErrorIcon = () => (
   </svg>
 );
 
-const Login = () => {
+// MAKE SURE TO PASS 'user' as a prop from your App.jsx!
+const Login = ({ user }) => {
+    const navigate = useNavigate();
     const [isLoginMode, setIsLoginMode] = useState(true);
     
     // Form States
@@ -41,6 +44,14 @@ const Login = () => {
     const [captcha, setCaptcha] = useState({ num1: 0, num2: 0 });
     const [userCaptcha, setUserCaptcha] = useState('');
 
+    // 🔥 THE BOUNCER: If user is already logged in (or hits back button to get here),
+    // instantly redirect them to the home page and erase history.
+    useEffect(() => {
+      if (user) {
+        navigate('/', { replace: true });
+      }
+    }, [user, navigate]);
+
     // Generate new captcha
     const generateCaptcha = () => {
         setCaptcha({
@@ -51,7 +62,7 @@ const Login = () => {
     };
 
     // Initialize captcha when switching to register mode
-    React.useEffect(() => {
+    useEffect(() => {
         if (!isLoginMode) generateCaptcha();
     }, [isLoginMode]);
 
@@ -87,8 +98,9 @@ const Login = () => {
                 await backendAPI.post('/auth/register', { name, email, password, role: 'User' });
             }
 
-            // 🚨 THE FIX: Force a hard refresh of the browser
+            // 🚨 Force a hard refresh of the browser
             // This guarantees App.jsx sees your cookie and unlocks the Checkout page
+            // (It also wipes out router history automatically!)
             window.location.href = '/';
             
         } catch (err) {
@@ -98,7 +110,7 @@ const Login = () => {
     };
 
     return (
-        <div className="flex justify-center bg-[#e2e9f0] items-center py-16 px-4 font-['Inter',sans-serif]">
+        <div className="flex justify-center bg-[#e2e9f0] items-center min-h-screen py-16 px-4 font-['Inter',sans-serif]">
             
             <div className="w-full max-w-[420px] bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-8 md:p-10 animate-[fadeIn_0.4s_ease-out]">
                 
