@@ -15,55 +15,21 @@ if (!document.getElementById("premium-font")) {
 }
 
 const CalendarIcon = () => (
-  <svg
-    className="w-4 h-4 text-slate-400"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-    />
+  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
   </svg>
 );
 
 const LocationIcon = () => (
-  <svg
-    className="w-4 h-4 text-slate-400"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.242-4.243a8 8 0 1111.314 0z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-    />
+  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.242-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 );
 
 const TicketIcon = () => (
-  <svg
-    className="w-5 h-5 mr-2"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={2}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-    />
+  <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
   </svg>
 );
 
@@ -85,6 +51,10 @@ export default function UserPortal() {
         setError(null);
         const response = await backendAPI.get("/matches");
         const apiData = response.data;
+        
+        // 🚨 DEBUGGING LOG: Check your browser console to see if image_url exists here!
+        console.log("Fetched matches from backend:", apiData);
+
         setMatches(apiData);
         if (apiData && apiData.length > 0) {
           setSelectedMatch(apiData[0]);
@@ -105,6 +75,13 @@ export default function UserPortal() {
     if (selectedMatch) {
       navigate(`/book/${selectedMatch.id}`);
     }
+  };
+
+  // Helper to safely get image
+  const getMatchImage = (match) => {
+    if (!match) return DEFAULT_IMAGE;
+    // Checks if image_url exists AND isn't an empty string
+    return (match.image_url && match.image_url.trim() !== "") ? match.image_url : DEFAULT_IMAGE;
   };
 
   return (
@@ -170,7 +147,7 @@ export default function UserPortal() {
       `}</style>
 
       {/* ── Header ── */}
-      <header className="pt-16 pb-12 px-6 text-center max-w-3xl mx-auto">
+      <header className="pt-8 pb-12 px-6 text-center max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase mb-1">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
           Live Ticketing
@@ -204,7 +181,7 @@ export default function UserPortal() {
 
         {/* ── 1. HERO CARD ── */}
         {selectedMatch && (
-          <section className="mb-16">
+          <section className="mb-10">
             <div
               className="hero-card bg-white rounded-[2rem] border border-slate-200 overflow-hidden flex flex-col md:flex-row cursor-default"
               style={{
@@ -215,7 +192,7 @@ export default function UserPortal() {
               {/* Image */}
               <div className="md:w-[55%] h-64 md:h-auto relative bg-slate-100 overflow-hidden">
                 <img
-                  src={selectedMatch.image_url || DEFAULT_IMAGE}
+                  src={getMatchImage(selectedMatch)}
                   alt={`${selectedMatch.team_a} vs ${selectedMatch.team_b}`}
                   className="hero-img w-full h-full object-cover"
                 />
@@ -280,7 +257,7 @@ export default function UserPortal() {
         {/* ── 2. UPCOMING MATCHES (SLIDER) ── */}
         {matches.length > 0 && (
           <section className="mb-16">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-extrabold text-slate-900 mb-4 tracking-tight flex items-center gap-2">
             <span className="w-2 h-8 bg-blue-600 rounded-full"></span>
             Upcoming Matches
@@ -301,7 +278,7 @@ export default function UserPortal() {
                   >
                     <div className="h-40 w-full overflow-hidden relative bg-slate-100">
                       <img
-                        src={match.image_url || DEFAULT_IMAGE}
+                        src={getMatchImage(match)}
                         className="match-thumb w-full h-full object-cover"
                         alt="Thumbnail"
                       />
