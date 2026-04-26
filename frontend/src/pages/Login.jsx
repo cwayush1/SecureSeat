@@ -13,7 +13,7 @@ const MailIcon = () => (
 const TicketLogo = () => (
   <img
     src={logo}
-    alt="Criceco Logo"
+    alt="SecureSeat Logo"
     className="h-80 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
   />
 );
@@ -101,6 +101,7 @@ const Login = ({ user }) => {
                 await backendAPI.post('/auth/register', { name, email, password, role: 'User' });
             }
 
+            // Force a reload to trigger the App.jsx user auth check
             window.location.href = '/';
             
         } catch (err) {
@@ -128,16 +129,11 @@ const Login = ({ user }) => {
                         The ultimate premium platform to book, manage, and verify your live event tickets with absolute security.
                     </p>
                 </div>
-
-                <div className="absolute bottom-10 text-slate-700/50 font-['JetBrains_Mono'] text-sm font-bold tracking-widest uppercase">
-                  // Authenticated Access Only
-                </div>
             </div>
 
             {/* ── RIGHT HALF: Form Data ── */}
             <div className="w-full lg:w-1/2 flex justify-center items-center p-6 md:p-12 relative">
                 
-                {/* Floating Card - INCREASED max-w to 540px and padding to p-14 */}
                 <div className="w-full max-w-[540px] bg-white rounded-[2.5rem] shadow-2xl shadow-slate-300/60 border border-slate-100 p-10 md:p-14 animate-[fadeUp_0.4s_ease-out]">
                     
                     {/* ── Header ── */}
@@ -162,7 +158,6 @@ const Login = ({ user }) => {
                     )}
                     
                     {/* ── Form ── */}
-                    {/* Increased space between inputs to space-y-6 */}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         
                         {!isLoginMode && (
@@ -270,7 +265,6 @@ const Login = ({ user }) => {
                             </>
                         )}
                         
-                        {/* Increased button height and font size */}
                         <button 
                             type="submit" 
                             disabled={isLoading}

@@ -213,12 +213,12 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden h-full min-h-[680px] flex flex-col">
               <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-slate-800 uppercase tracking-widest font-['JetBrains_Mono']">
-                   Live Match Preview
+                   Match Preview
                 </h2>
                 {hasPreview && (
                   <span className="flex items-center gap-2 text-xs font-bold text-green-600 bg-green-50 border border-green-200 px-3 py-1.5 rounded-lg shadow-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                    LIVE UPDATE
+                   UPDATE
                   </span>
                 )}
               </div>
