@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // Connects to your Node.js Backend
 export const backendAPI = axios.create({
-    baseURL: 'http://localhost:5000/api', 
+    // Uses Vercel's env variable in production, falls back to localhost for local development
+    baseURL: import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5000/api', 
     withCredentials: true
 });
 
@@ -13,5 +14,6 @@ backendAPI.interceptors.request.use((config) => {
 
 // Connects directly to your Python AI Service
 export const aiAPI = axios.create({
-    baseURL: 'http://localhost:8000',
+    // Uses Vercel's env variable in production, falls back to localhost for local development
+    baseURL: import.meta.env.VITE_AI_API_URL || 'http://localhost:8000',
 });
