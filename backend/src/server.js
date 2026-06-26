@@ -12,8 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'https://secure-seat-git-main-cwayush1s-projects.vercel.app', // Your specific frontend URL
-  credentials: true, // This is required since you use cookies/sessions
+  origin: '*', // Allow everything
+  credentials: true,
 }));
 app.use(express.json());
 app.use(cookieParser());
