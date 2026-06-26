@@ -132,9 +132,13 @@ export default function UserPortal() {
         setIsLoading(true);
         setError(null);
         const response = await backendAPI.get("/matches");
-        const apiData = response.data;
-        console.log("Fetched matches from backend:", apiData);
-        setMatches(apiData);
+
+        console.log("STATUS:", response.status);
+        console.log("DATA:", response.data);
+        console.log("TYPE:", typeof response.data);
+        console.log("IS ARRAY:", Array.isArray(response.data));
+
+        setMatches(response.data);
         if (apiData && apiData.length > 0) {
           setSelectedMatch(apiData[0]);
         }

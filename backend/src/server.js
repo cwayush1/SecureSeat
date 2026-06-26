@@ -11,8 +11,19 @@ const { connectRedis } = require('./config/redisClient');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  "https://secure-seat-git-main-cwayush1s-projects.vercel.app",
+  "https://secure-seat-kw8q1t37h-cwayush1s-projects.vercel.app",
+];
+
 app.use(cors({
-  origin: '*', // Allow everything
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());
