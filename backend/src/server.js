@@ -11,10 +11,9 @@ const { connectRedis } = require('./config/redisClient');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middlewares
-app.use(cors({ 
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175',process.env.FRONTEND_URL], 
-    credentials: true 
+app.use(cors({
+  origin: 'https://secure-seat-git-main-cwayush1s-projects.vercel.app', // Your specific frontend URL
+  credentials: true, // This is required since you use cookies/sessions
 }));
 app.use(express.json());
 app.use(cookieParser());
