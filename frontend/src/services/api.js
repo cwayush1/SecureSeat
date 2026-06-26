@@ -2,8 +2,7 @@ import axios from 'axios';
 
 // Connects to your Node.js Backend
 export const backendAPI = axios.create({
-    // Uses Vercel's env variable in production, falls back to localhost for local development
-    baseURL: import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5000/api', 
+    baseURL: import.meta.env.VITE_RENDER_API_URL || 'http://localhost:5000/api', 
     withCredentials: true
 });
 
