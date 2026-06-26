@@ -12,8 +12,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
+  "https://secure-seat-rho.vercel.app",
   "https://secure-seat-git-main-cwayush1s-projects.vercel.app",
-  "https://secure-seat-kw8q1t37h-cwayush1s-projects.vercel.app",
+  "https://secure-seat-itjsypibk-cwayush1s-projects.vercel.app",
 ];
 
 app.use(cors({
