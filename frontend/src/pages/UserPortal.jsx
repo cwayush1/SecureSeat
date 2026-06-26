@@ -137,7 +137,7 @@ export default function UserPortal() {
         console.log("DATA:", response.data);
         console.log("TYPE:", typeof response.data);
         console.log("IS ARRAY:", Array.isArray(response.data));
-
+        const apiData = response.data;
         setMatches(response.data);
         if (apiData && apiData.length > 0) {
           setSelectedMatch(apiData[0]);
