@@ -30,7 +30,7 @@ const CheckCircleIcon = () => (
   </svg>
 );
 
-const Checkout = () => {
+const Checkout = ({ user }) => {
     // Grab the parameters we passed in the URL from the SeatMap
     const { matchId, seatId, tierName } = useParams();
     const navigate = useNavigate();
@@ -98,7 +98,7 @@ const Checkout = () => {
     const handlePaymentSuccess = (response) => {
         setPaymentData({
             paymentId: response.paymentId,
-            fakePaymentId: response.fakePaymentId,
+            razorpayPaymentId: response.razorpayPaymentId,
             amount: response.amount
         });
         
@@ -154,13 +154,27 @@ const Checkout = () => {
                     <CheckCircleIcon />
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-4">Ticket Confirmed!</h1>
                     <p className="text-slate-600 font-medium mb-2">{bookingSuccess}</p>
-                    <p className="text-sm text-slate-400 mb-10 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        ✓ Payment processed: ₹{ticketPrice?.toFixed(2)}
-                        <br/>
-                        ✓ Biometric data secured
-                        <br/>
-                        ✓ Ready for gate entry
-                    </p>
+                    <div className="text-sm text-slate-500 mb-10 bg-slate-50 p-4 rounded-xl border border-slate-100 text-left space-y-1.5">
+                        <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+                            <span className="font-semibold text-slate-800">Status</span>
+                            <span className="font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-200 text-xs">PAID via Razorpay</span>
+                        </div>
+                        {paymentData?.razorpayPaymentId && (
+                            <div className="flex justify-between items-center text-xs">
+                                <span className="text-slate-500">Razorpay ID:</span>
+                                <span className="font-mono font-medium text-slate-700">{paymentData.razorpayPaymentId}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between items-center text-xs">
+                            <span className="text-slate-500">Amount Paid:</span>
+                            <span className="font-bold text-slate-900">₹{ticketPrice?.toFixed(2)}</span>
+                        </div>
+                        <div className="text-xs text-slate-500 pt-1 border-t border-slate-200">
+                            ✓ Biometric face vector cryptographically secured
+                            <br/>
+                            ✓ Gate entry pass active in My Tickets
+                        </div>
+                    </div>
                     <button 
                         onClick={() => navigate('/my-tickets')}
                         className="w-full bg-slate-900 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-md transform hover:-translate-y-1"
@@ -294,6 +308,7 @@ const Checkout = () => {
                                             onPaymentSuccess={handlePaymentSuccess}
                                             onPaymentFailure={handlePaymentFailure}
                                             isLoading={isBooking}
+                                            user={user}
                                         />
                                         <button 
                                             onClick={() => setPaymentStep('biometric')} 

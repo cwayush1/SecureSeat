@@ -5,22 +5,34 @@ const {
     createPaymentOrder,
     verifyPayment,
     handlePaymentFailure,
-    getPaymentHistory
+    getPaymentHistory,
+    getPaymentDetails,
+    refundPayment,
+    handleRazorpayWebhook
 } = require('../controllers/paymentController');
 
-// All payment routes require authentication
+// Public route for Razorpay webhook notifications
+router.post('/webhook', handleRazorpayWebhook);
+
+// Protected routes (User must be authenticated)
 router.use(protect);
 
-// POST /api/payments/create-order - Create payment order
+// POST /api/payments/create-order - Initialize Razorpay order
 router.post('/create-order', createPaymentOrder);
 
-// POST /api/payments/verify-payment - Verify payment after successful capture
+// POST /api/payments/verify-payment - Verify signature and finalize payment
 router.post('/verify-payment', verifyPayment);
 
-// POST /api/payments/handle-payment-failure - Record failed payment
+// POST /api/payments/handle-payment-failure - Record failed payment attempt
 router.post('/handle-payment-failure', handlePaymentFailure);
 
-// GET /api/payments/history - Get user's payment history
+// GET /api/payments/history - User's past transactions
 router.get('/history', getPaymentHistory);
+
+// GET /api/payments/:paymentId - Get specific payment status
+router.get('/:paymentId', getPaymentDetails);
+
+// POST /api/payments/refund - Refund a completed transaction
+router.post('/refund', refundPayment);
 
 module.exports = router;

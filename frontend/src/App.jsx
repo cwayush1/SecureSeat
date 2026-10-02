@@ -68,7 +68,7 @@ const AppContent = ({ user, handleLogout, darkMode, setDarkMode }) => {
 
           <Route
             path="/checkout/:matchId/:seatId"
-            element={isLoggedIn ? <Checkout /> : <Navigate to="/login" />}
+            element={isLoggedIn ? <Checkout user={user} /> : <Navigate to="/login" />}
           />
           
           <Route
