@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import { backendAPI } from '../services/api';
 import PaymentGateway from '../components/PaymentGateway';
@@ -34,14 +34,16 @@ const Checkout = ({ user }) => {
     // Grab the parameters we passed in the URL from the SeatMap
     const { matchId, seatId, tierName } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const webcamRef = useRef(null);
 
+    const passedPrice = location.state?.price ? Number(location.state.price) : null;
     const [lockStatus, setLockStatus] = useState('Acquiring lock...');
     const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
     const [imageSrc, setImageSrc] = useState(null);
     const [isBooking, setIsBooking] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState(null);
-    const [ticketPrice, setTicketPrice] = useState(null);
+    const [ticketPrice, setTicketPrice] = useState(passedPrice);
     const [priceError, setPriceError] = useState(null);
     const [paymentData, setPaymentData] = useState(null);
     const [paymentStep, setPaymentStep] = useState('biometric'); // 'biometric' or 'payment'
@@ -53,17 +55,19 @@ const Checkout = ({ user }) => {
                 const response = await backendAPI.post('/bookings/lock-seat', { matchId, seatId });
                 setLockStatus('Seat Locked! You have 10 minutes to complete checkout.');
                 
-                // Fetch ticket price
+                // Fetch verified ticket price from backend
                 try {
                     const ticketResponse = await backendAPI.get(`/matches/${matchId}/seat-price/${seatId}`);
-                    console.log('Price response:', ticketResponse.data);
-                    setTicketPrice(ticketResponse.data.price);
+                    console.log('Price response from backend:', ticketResponse.data);
+                    if (ticketResponse.data?.price) {
+                        setTicketPrice(Number(ticketResponse.data.price));
+                    }
                     setPriceError(null);
                 } catch (priceErr) {
-                    console.error('Error fetching price:', priceErr);
-                    setPriceError('Failed to fetch ticket price. Please refresh the page.');
-                    // Set a default price if fetch fails
-                    setTicketPrice(500);
+                    console.error('Error fetching price from backend:', priceErr);
+                    if (!passedPrice) {
+                        setPriceError('Failed to fetch ticket price. Please refresh the page.');
+                    }
                 }
             } catch (error) {
                 console.error(error);
@@ -72,7 +76,7 @@ const Checkout = ({ user }) => {
             }
         };
         lockSeat();
-    }, [matchId, seatId]);
+    }, [matchId, seatId, passedPrice]);
 
     // 2. Handle the Countdown Timer
     useEffect(() => {

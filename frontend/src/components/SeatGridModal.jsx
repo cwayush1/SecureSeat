@@ -269,9 +269,18 @@ export default function SeatGridModal({ matchId, standData, onClose }) {
   const handleSeatClick = useCallback((seat) => {
     if (!zoomed) { setZoomed(true); return; }
     if (seat.seat_status === 'Available') {
-      navigate(`/checkout/${matchId}/${seat.seat_id}`);
+      const seatPrice = seat.current_price ? Number(seat.current_price) : Number(standData.base ?? standData.base_price ?? 0);
+      navigate(`/checkout/${matchId}/${seat.seat_id}`, {
+        state: {
+          price: seatPrice,
+          standName: standData.name,
+          tierName: selectedBlock?.tier || standData.tier,
+          rowId: seat.row_id,
+          seatNumber: seat.seat_number
+        }
+      });
     }
-  }, [zoomed, matchId, navigate]);
+  }, [zoomed, matchId, navigate, standData, selectedBlock]);
 
   /* close on backdrop */
   const handleBackdrop = (e) => { if (e.target === e.currentTarget) onClose(); };
@@ -462,7 +471,7 @@ export default function SeatGridModal({ matchId, standData, onClose }) {
                           key={seat.seat_id}
                           className={`sgm-seat ${avail ? (isVIP ? 'avail vip' : 'avail reg') : 'booked'}`}
                           onClick={() => handleSeatClick(seat)}
-                          title={`${rowId}${seat.seat_number}${avail ? ' — Available' : ' — Reserved'}`}
+                          title={`${rowId}${seat.seat_number}${avail ? ` — Available (₹${Number(seat.current_price || standData.base || standData.base_price || 0).toLocaleString('en-IN')})` : ' — Reserved'}`}
                         >
                           {seat.seat_number}
                         </div>

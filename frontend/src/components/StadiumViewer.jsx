@@ -92,11 +92,14 @@ export default function StadiumViewer({
 
         const merged = (stadiumData?.stands ?? []).map(staticStand => {
           const db = dbMap[staticStand.id] ?? {};
+          const realPrice = db.current_price ? Number(db.current_price) : (db.base_price ? Number(db.base_price) : staticStand.base);
           return {
             ...staticStand,
             stand_image: db.stand_image ?? staticStand.stand_image ?? null,
             cap: db.capacity ?? staticStand.cap,
-            base: db.base_price ?? staticStand.base,
+            base: realPrice,
+            current_price: realPrice,
+            dynamic_pricing_factor: db.dynamic_pricing_factor ? Number(db.dynamic_pricing_factor) : 1.0,
           };
         });
         setEnrichedStands(merged);
@@ -124,12 +127,7 @@ export default function StadiumViewer({
     if (imgRef.current && imgRef.current.complete) setImgLoaded(true);
   }, [activeImage]);
 
-  // ── Dynamic pricing ────────────────────────────────────────────────────────
-  const computeDaysLeft = useCallback(() => {
-    if (!matchDate) return 30;
-    return Math.max(0, Math.ceil((new Date(matchDate) - new Date()) / 86400000));
-  }, [matchDate]);
-
+  // ── Stand Seat Counts & Verified Price ─────────────────────────────────────
   useEffect(() => {
     if (!selectedStand || !matchId) { setDynamicPriceData(null); return; }
     setPriceLoading(true);
@@ -141,21 +139,25 @@ export default function StadiumViewer({
           totalSeats += b.total_seats || 0;
           availableSeats += b.available_seats || 0;
         });
-        const occupancyRatio = totalSeats > 0 ? (totalSeats - availableSeats) / totalSeats : 0;
-        const result = computeDynamicPrice(selectedStand.base, {
-          daysLeft: computeDaysLeft(), occupancyRatio,
-          standType: selectedStand.type, totalSeats, availableSeats,
+        const standPrice = Number(selectedStand.current_price ?? selectedStand.base ?? 0);
+        setDynamicPriceData({
+          price: standPrice,
+          basePrice: standPrice,
+          multiplier: Number(selectedStand.dynamic_pricing_factor || 1.0),
+          availableSeats,
         });
-        setDynamicPriceData({ ...result, availableSeats });
       })
       .catch(() => {
+        const fallbackPrice = Number(selectedStand.current_price ?? selectedStand.base ?? 0);
         setDynamicPriceData({
-          price: selectedStand.base, basePrice: selectedStand.base,
-          multiplier: 1.0, availableSeats: selectedStand.cap,
+          price: fallbackPrice,
+          basePrice: fallbackPrice,
+          multiplier: 1.0,
+          availableSeats: selectedStand.cap,
         });
       })
       .finally(() => setPriceLoading(false));
-  }, [selectedStand, matchId, computeDaysLeft]);
+  }, [selectedStand, matchId]);
 
   // ── Theme ──────────────────────────────────────────────────────────────────
   const t = {

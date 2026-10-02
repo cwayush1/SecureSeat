@@ -165,6 +165,8 @@ const getMatchStands = async (req, res) => {
                 st.stand_image,
                 st.capacity,
                 msc.base_price,
+                COALESCE(msc.dynamic_pricing_factor, 1.0) AS dynamic_pricing_factor,
+                (msc.base_price * COALESCE(msc.dynamic_pricing_factor, 1.0)) AS current_price,
                 st.tier,
                 st.category
             FROM Match_Stands_Config msc
